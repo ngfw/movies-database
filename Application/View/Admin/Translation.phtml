@@ -1,0 +1,161 @@
+<?php
+if (isset($this->role) and $this->role == "edit"):
+    ?>
+    <div class="row">
+        <div class="col-10">
+            <h3><?php echo sprintf($this->translation['edit_translation'], $this->selectedLanguage); ?></h3>
+        </div>
+        <div class="col-2">
+            <a href="javascript:void(0);" class="btn btn-primary addTranslation"><?php echo $this->translation['add_translation'];?></a>
+        </div>
+
+        <div class="col-12 hide" id="addNewTranslation">
+            <div class="jumbotron" style="position:relative">
+                <h4><?php echo $this->translation['add_new_translation'];?></h4>
+                <form method="post" action="<?php echo ngfw\Uri::baseUrl() . $this->requestedLanguage; ?>/admin/action/translation/add/new" class="form-inline">
+                    <input type="text" class="form-control" name="source" placeholder ="<?php echo $this->translation['source'];?>" />
+                    <input type="text" class="form-control" name="translation" placeholder ="<?php echo $this->translation['translation'];?>" />
+                    <input type="text"  name="language" value="<?php echo $this->selectedLanguage; ?>" class="uneditable-input input-mini form-control" readonly />
+                    <input type="submit" value="<?php echo $this->translation['add'];?>" class="btn btn-primary"/>                
+                </form>
+                <span style="position:absolute; right:10px; top:10px; ">
+                    <a href="javascript:void(0);" class="close closeNewTranslation" style="color:black">×</a>
+                </span>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th><?php echo $this->translation['source'];?></th>
+                        <th><?php echo $this->translation['translation'];?></th>
+                        <th><?php echo $this->translation['language'];?></th>
+                        <th><?php echo $this->translation['action'];?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if (isset($this->translationData) and is_array($this->translationData)):
+                        $c = 0;
+                        foreach ($this->translationData as $translationData):
+                            ?>
+                            <form class="updateTranslation" class="form-inline" data-key="<?php echo $c;?>">
+                            <tr>    
+                                <td><input type="hidden" name="translationID" value="<?php echo $translationData['TranslationID']; ?>" /><input type="text" name="source" value="<?php echo $translationData['Source']; ?>" class="form-control" /></td>
+                                <td><input type="text" name="translation" value="<?php echo $translationData['Translation']; ?>" class="form-control" /></td>
+                                <td class="col-1"><fieldset disabled><input type="text" name="language" value="<?php echo $translationData['Language']; ?>" class="uneditable-input form-control" readonly/></fieldset></td>
+                                <td class="col-2"><input type="submit" class="btn status<?php echo $c;?>" value="<?php echo $this->translation['update'];?>" />
+                                    <a class="btn btn-danger confirm-delete" href="<?php echo ngfw\Uri::baseUrl() . $this->requestedLanguage; ?>/admin/action/translation/delete/<?php echo $translationData['TranslationID']; ?>"><i class="icon-trash"></i> <?php echo $this->translation['delete'];?></a>
+                                    </td>
+                            </tr>  
+                            </form>
+                            <?php
+                            $c++;
+                        endforeach;
+                    endif;
+                    ?>
+                </tbody>
+            </table>
+            <script>
+                $(function(){
+                    $(".updateTranslation").submit(function(){
+                        var key = $(this).data("key");
+                        var status = $('.status'+key);
+                        var tmpNameHolder = status.val();
+                        status.val("<?php echo $this->translation['loading'];?>");
+                        var formData = $(this).serialize();
+                        $.ajax({
+                            type: "POST",
+                            data: formData
+                        }).done(function( msg ) {
+                            if(msg == "ok"){
+                                status.val(tmpNameHolder);
+                            }else{
+                                status.val("Error");
+                            }
+                        });
+                        return false;
+                    });
+                    $(".addTranslation").click(function(){
+                        $(this).attr('disabled', 'disabled');
+                        $("#addNewTranslation").removeClass("hide").show();
+                    });
+                    $(".closeNewTranslation").click(function(){
+                        $("#addNewTranslation").hide();
+                        $(".addTranslation").removeAttr('disabled');
+                    });
+                });
+            </script>
+        </div>
+        <?php
+    else:
+        ?>
+        <div class="row">
+            <div class="col-10">
+                <h3><?php echo $this->translation['translation'];?></h3>
+            </div>
+            <div class="col-2">
+                <a href="javascript:void(0);" class="btn btn-primary addLanguage"><?php echo $this->translation['add_new_language'];?></a>
+            </div><br />
+            <div class="col-12 hide" id="addNewLanguage">
+                <div class="jumbotron" style="position:relative">
+                    <h4><?php echo $this->translation['add_new_language'];?></h4>
+                    <form method="post">
+                        <input type="text" name="newLanguage" class="form-control input-small addInput" placeholder ="ex. 'en'" />
+                        <span class="help-block"><?php echo sprintf($this->translation['enter_language_code'], '<a href="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes" target="_blank">ISO 639-1</a>'); ?></span>
+                        <input type="submit" value="<?php echo $this->translation['add'];?>" class="btn btn-primary"/>                
+                    </form>
+                    <span style="position:absolute; right:10px; top:10px; ">
+                        <a href="javascript:void(0);" class="close closeNewLanguage" style="color:black">×</a>
+                    </span>
+                </div>
+            </div>
+            <script>
+            $(function(){
+                $(".addLanguage").click(function(){
+                    $(this).attr('disabled', 'disabled');
+                    $("#addNewLanguage").removeClass("hide").show();
+                });
+                $(".closeNewLanguage").click(function(){
+                    $("#addNewLanguage").hide();
+                    $(".addLanguage").removeAttr('disabled');
+                });
+            });
+            </script>
+            <div class="col-12">
+                <table class="table">
+                <?php
+                if(isset($this->availableLanguages) and is_array($this->availableLanguages)):
+                foreach ($this->availableLanguages as $availableLanguage):
+                    $percentTranslated = number_format((($this->languageStats[$availableLanguage]['Total']-$this->languageStats[$availableLanguage]['Empty'])/$this->languageStats[$availableLanguage]['Total']) * 100 );
+                    ?>
+                    <tr>
+                        <td>
+                            <a href='<?php echo ngfw\Uri::baseUrl() . $this->requestedLanguage;?>/admin/action/translation/edit/<?php echo $availableLanguage;?>'>
+                            <img src="<?php echo ngfw\Uri::baseUrl();?>Assets/flags/<?php echo $availableLanguage;?>.png" /><a/>
+                        </td>
+                        <td><a href='<?php echo ngfw\Uri::baseUrl() . $this->requestedLanguage;?>/admin/action/translation/edit/<?php echo $availableLanguage;?>'><?php echo $availableLanguage;?></a></td>
+                        <td>
+                            <?php echo sprintf($this->translation['translated_out_of'], $this->languageStats[$availableLanguage]['Total']-$this->languageStats[$availableLanguage]['Empty'], $this->languageStats[$availableLanguage]['Total']);?> (<?php echo $percentTranslated;?>%)
+                        </td>
+                        <td width="50%">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success" style="width: <?php echo $percentTranslated;?>%;"></div>
+                                <div class="progress-bar progress-bar-danger" style="width: <?php echo 100-$percentTranslated;?>%;"></div>
+                            </div>
+                        </td>
+                        <td>
+                             <a class="btn btn-danger confirm-delete" href="<?php echo ngfw\Uri::baseUrl() . $this->requestedLanguage; ?>/admin/action/translation/deletelanguage/<?php echo $availableLanguage; ?>"><i class="icon-trash"></i> <?php echo $this->translation['delete'];?></a>
+                        </td>
+                    </tr>   
+                    <?php
+                endforeach;
+                endif;
+                ?>
+                </table>
+            </div>
+        </div>
+    <?php
+    endif;
+    ?>

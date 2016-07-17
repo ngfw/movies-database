@@ -1,0 +1,9 @@
+<?php if(isset($this->page) and !empty($this->page)):?>
+<div class="row">
+	<div class="col-sm-12">
+	<h1><?php echo $this->page['Title']; ?></h1>
+	<hr />
+	<?php echo str_replace("<MY_WEBSITE_ADDRESS>", ngfw\Uri::baseUrl(), $this->page['Content']); ?>
+	</div>
+</div>
+<?php endif; ?>

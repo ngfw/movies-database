@@ -1,0 +1,150 @@
+<div class="row marginTop10">
+    <?php
+    if (isset($this->person['profile_path']) and !empty($this->person['profile_path'])): ?>
+    <div class="col-sm-2 mainposter">
+        <a href="<?php echo $this->profileOriginalImage . $this->person['profile_path']; ?>" data-download="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/download/id/" . base64_encode($this->profileOriginalImage . $this->person['profile_path']); ?>" class="zoombox zgallery1 thumbnail"><img src="<?php echo $this->profileMediumPath . $this->person['profile_path']; ?>" /></a>
+        <div class="hide">
+        <?php if(isset($this->person['images']['profiles']) and !empty($this->person['images']['profiles'])): ?>
+            <?php foreach ($this->person['images']['profiles'] as $key => $image): 
+            if($key>0):
+            ?>
+                <a href="<?php echo $this->profileOriginalImage . $image['file_path']; ?>" data-download="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/download/id/" . base64_encode($this->profileOriginalImage . $image['file_path']); ?>" class="zoombox zgallery1">
+                    <img src="<?php echo $this->profileMediumPath . $image['file_path']; ?>" />
+                </a>
+            <?php 
+            endif;
+            endforeach; ?>
+        <?php endif; ?>
+        </div>
+    </div>
+    <?php endif; ?>
+    <div class="col-sm-10 col-md-6">
+        <h2><?php echo $this->person['name']; ?></h2>
+
+        <dl>
+            <?php if (isset($this->person['also_know_as']) and !empty($this->person['also_know_as'])): ?>
+                <dt><span class="text-muted"><?php echo $this->translation['alsoKnownAs']; ?>:</span></dt>
+                <dd><?php echo $this->person['also_know_as'][0]; ?></dd>
+            <?php endif; ?>
+
+            <?php if (isset($this->person['birthday']) and !empty($this->person['birthday'])): ?>
+                <dt><span class="text-muted"><?php echo $this->translation['birthday']; ?>:</span></dt>
+                <dd><?php
+                        list($year, $month, $day) = explode("-", $this->person['birthday']);
+                        echo $month . "/" . $day . "/" . $year;
+                        ?></dd>
+            <?php endif; ?>
+
+            <?php if (isset($this->person['place_of_birth']) and !empty($this->person['place_of_birth'])): ?>
+                <dt><span class="text-muted"><?php echo $this->translation['placeOfBirth']; ?>:</span></dt>
+                <dd><?php echo $this->person['place_of_birth']; ?>:</dd>
+            <?php endif; ?>
+
+            <?php if (isset($this->person['biography']) and !empty($this->person['biography'])): ?>
+                <dt><span class="text-muted"><?php echo $this->translation['biography']; ?>:</span></dt>
+                <dd><?php echo $this->person['biography']; ?></dd>
+            <?php endif; ?>
+        </dl>               
+    </div>
+    <div class="col-sm-12 col-md-4">
+        <div class="hidden-xs hidden-sm">
+        <?php
+            $localAd = array();
+            foreach ($this->objects['ads'] as $ad):
+                if ($ad['adSize'] == "336x280"):
+                    $localAd[] = $ad['adValue'];
+                endif;
+            endforeach;
+            if (!empty($localAd)):
+                shuffle($localAd);
+                echo $localAd[0];
+            endif;
+        ?>
+        </div>
+        <div class="hidden-md hidden-lg">
+            <?php
+            $localAd = array();
+            foreach ($this->objects['ads'] as $ad):
+                if ($ad['adSize'] == "728x90"):
+                    $localAd[] = $ad['adValue'];
+                endif;
+            endforeach;
+            if (!empty($localAd)):
+                shuffle($localAd);
+                echo $localAd[0];
+            endif;
+            ?>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-sm-12"><hr /><h2><?php echo $this->translation['credits']; ?></h2></div>
+
+        
+    <?php if (isset($this->person['credits']['cast']) and !empty($this->person['credits']['cast'])): ?>
+        <div class="col-md-6">                 
+            <table class="table table-striped">
+                <tbody>
+                    <?php
+                    $this->person['credits']['cast'] = Helper::sort_multiarray($this->person['credits']['cast'], "release_date", "DESC");
+                    foreach ($this->person['credits']['cast'] as $cast):
+                        ?>
+                        <tr>
+                            <td width="110px">
+                                <a href="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/movie/" . $cast['id'] . "/" . urlencode($cast['title']."-".substr($cast['release_date'], 0, 4)); ?>">
+                                    <?php
+                                    if (!isset($cast['poster_path']) or empty($cast['poster_path'])):
+                                        echo '<img src="Assets/img/noposter.jpg" width="92px" height="138px" />';
+                                    else:
+                                        echo '<img src="' . $this->smallThumb . $cast['poster_path'] . '" width="92px" height="138px" />';
+                                    endif;
+                                    ?>
+
+                                </a>
+                            </td>
+                            <td><a href="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/movie/" . $cast['id'] . "/" . urlencode($cast['title']."-".substr($cast['release_date'], 0, 4)); ?>"><?php echo $cast['original_title']; ?></a>
+                                <?php if(isset($cast['release_date']) and !empty($cast['release_date'])): 
+                                ?>(<?php 
+                                echo substr($cast['release_date'], 0, 4); ?>)
+                                <?php endif; ?>
+                                <br /><span class="text-muted"><?php if(isset($cast['character']) and !empty($cast['character'])):  echo $this->translation['as'] . " " . $cast['character']; endif; ?></span> 
+                            </td>                         
+                        </tr>
+        <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+    <?php
+    if (isset($this->person['credits']['crew']) and !empty($this->person['credits']['crew'])):
+        $this->person['credits']['crew'] = Helper::sort_multiarray($this->person['credits']['crew'], "release_date", "DESC");
+        ?>
+        <div class="col-md-6">                 
+            <table class="table table-striped">
+                <tbody>
+                    <?php foreach ($this->person['credits']['crew'] as $crew): ?>
+                        <tr>
+                            <td width="110px">
+                                <a href="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/movie/" . $crew['id'] . "/" . urlencode($crew['title']."-".substr($crew['release_date'], 0, 4)); ?>">
+                                <?php
+                                    if (!isset($crew['poster_path']) or empty($crew['poster_path'])):
+                                        echo '<img src="Assets/img/noposter.jpg" width="92px" height="138px" />';
+                                    else:
+                                        echo '<img src="' . $this->smallThumb . $crew['poster_path'] . '" width="92px" height="138px" />';
+                                    endif;
+                                ?></a>
+                            </td>
+                            <td><a href="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/movie/" . $crew['id'] . "/" . urlencode($crew['title']."-".substr($crew['release_date'], 0, 4)); ?>"><?php echo $crew['original_title']; ?></a> 
+                                <?php if(isset($crew['release_date']) and !empty($crewp['release_date'])): 
+                                ?>(<?php 
+                                echo substr($crew['release_date'], 0, 4); ?>)
+                                <?php endif; ?>
+                                <br />
+                                <span class="text-muted"><?php echo $crew['job']; ?></span> 
+                            </td>                         
+                        </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+</div>

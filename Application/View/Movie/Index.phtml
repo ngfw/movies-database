@@ -1,0 +1,374 @@
+<?php
+if(isset($this->movie) and isset($this->canonical)):
+
+if (isset($this->movie['images']['backdrops'][0])):
+    ?>
+    <div class="movieheader" data-image="<?php echo $this->originalImage . $this->movie['images']['backdrops'][0]['file_path']; ?>" >
+        <img src="Assets/img/loading.gif" class="backstretchLoader" style="width:25px;"/>
+    </div>
+    <?php
+endif;
+?>
+<div class="row movieInfo">
+    
+    
+    <div class="col-sm-2 mainposter">
+        <?php
+        if (!isset($this->movie['poster_path']) or empty($this->movie['poster_path'])):
+            ?>
+            <img src="Assets/img/noposter.jpg" class="thumbnail" />
+            <?php
+        else:
+            ?>
+            <a class="mainPosterLink zoombox zgallery1 thumbnail" <?php if(isset($this->movie['title'])): echo 'title="'.$this->movie['title'].'"'; endif;?> href="<?php echo $this->originalImage . $this->movie['poster_path']; ?>" data-download="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/download/id/" . base64_encode($this->profileOriginalImage . $this->movie['poster_path']); ?>">
+                <img src="<?php echo $this->mediumThumb . $this->movie['poster_path']; ?>" />
+            </a>
+            <?php
+            if (isset($this->movie['images']['posters']) and is_array($this->movie['images']['posters'])):
+                ?>
+                <a href="javascript:void(0)" class="allPosters btn btn-xs btn-default"><?php echo $this->translation['posters']; ?></a>
+                <?php
+                foreach ($this->movie['images']['posters'] as $key => $posters):
+                    if($key>0):
+                    ?>
+                    <a href="<?php echo $this->originalImage . $posters['file_path']; ?>" <?php if(isset($this->movie['title'])): echo 'title="'.$this->movie['title'].'"'; endif;?> data-download="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/download/id/" . base64_encode($this->originalImage . $posters['file_path']); ?>" data-gallery="gallery" class="zoombox zgallery1 hide">
+                        
+                    </a>
+                    <?php
+                    endif;
+                endforeach;
+            endif;
+        endif;
+        ?>
+        
+    </div>
+
+    <div class="col-sm-6">
+        <h2 class="movie-title"><?php if(isset($this->movie['title'])): echo $this->movie['title']; endif;?></h2>
+        <?php if (isset($this->movie['tagline']) and !empty($this->movie['tagline'])): ?>
+            <h4 class="movie-slogan"><?php echo $this->movie['tagline']; ?></h4>
+        <?php endif; ?>
+        
+        <?php
+        if (isset($this->movie['genres']) and !empty($this->movie['genres'])): 
+            ?>
+            <span class="text-muted"><?php if(count($this->movie['genres']) > 1): echo $this->translation['categories']; else: echo $this->translation['category']; endif;?>:</span> 
+            <?php 
+            foreach ($this->movie['genres'] as $key => $genres):
+                echo "<a href='" . ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/genre/" . $genres['id'] . "/" . $genres['name'] . "' class='genres'>" . $genres['name'] . "</a>";
+                if($key != (count($this->movie['genres'])-1) ):
+                    echo ", ";
+                endif;
+            endforeach;
+            ?>
+            <?php
+        endif;
+        ?>
+        
+        <?php if(isset($this->movie['overview'])):?>
+            <br /><span class="text-muted"><?php echo $this->movie['overview']; ?> </span>
+        <?php endif; ?>
+    </div>
+    <div class="col-sm-4">
+        <?php if(isset($this->movie['status']) and !empty($this->movie['status'])): ?>
+        <span class="text-muted"><?php echo $this->translation['status']; ?>:</span> 
+            <?php 
+                if($this->movie['status'] == "Released"):
+                    echo '<span class="label label-success">'.$this->movie['status'].'</span>';
+                else:
+                    echo '<span class="label label-info">'.$this->movie['status'].'</span>';
+                endif;
+            ?>
+            <?php
+            if(isset($this->movie["imdb_id"]) and !empty($this->movie["imdb_id"])):
+               ?>
+                <a href="http://www.imdb.com/title/<?php echo $this->movie["imdb_id"];?>/" class="label label-warning IMDb" rel="nofollow" target="_blank">IMDb</a>    
+                <?php
+            endif;
+            ?>
+            <br />
+        <?php endif; ?>
+        <?php
+        if (isset($this->movie['release_date']) and !empty($this->movie['release_date'])): 
+            ?>
+            <span class="text-muted"><?php echo $this->translation['release_date']; ?>:</span>  <?php echo $this->movie['release_date']; ?><br />
+            <?php
+        endif;
+        ?>
+
+        <?php if(isset($this->movie['runtime']) and !empty($this->movie['runtime'])): ?>
+        <span class="text-muted"><?php echo $this->translation['runtime']; ?>:</span> 
+            <?php echo $this->movie['runtime'] ." ". $this->translation['minute'] ." / ". Helper::convertToHoursMins($this->movie['runtime']); ?><br />
+        <?php endif; ?>
+
+        <?php if(isset($this->movie['budget']) and !empty($this->movie['budget']) and $this->movie['budget'] > 100000): ?>
+        <span class="text-muted"><?php echo $this->translation['budget']; ?>:</span> $<?php echo number_format($this->movie['budget']); ?><br />
+        <?php endif; ?>
+
+        <?php if(isset($this->movie['revenue']) and !empty($this->movie['revenue'])): ?>
+        <span class="text-muted"><?php echo $this->translation['revenue']; ?>:</span> $<?php echo number_format($this->movie['revenue']); ?><br />
+        <?php endif; ?>
+        <?php
+        if (isset($this->directors) and is_array($this->directors) and !empty($this->directors)):
+            if (count($this->directors) > 1):
+                ?>
+                <span class="text-muted"><?php echo $this->translation['directors']; ?> </span>
+                <?php
+                foreach ($this->directors as $key => $director):
+                    echo $director['name'];
+                    if ($key < count($this->directors) - 1):
+                        echo ", ";
+                    else:
+                        echo ".";
+                    endif;
+                endforeach;
+            else:
+                ?>
+                <span class="text-muted"><?php echo $this->translation['director']; ?> </span>
+                <?php
+                echo $this->directors[0]['name'];
+            endif;
+            ?> 
+            <br /> 
+            <?php
+        endif;
+        if (isset($this->writers) and is_array($this->writers) and !empty($this->writers)):
+            if (count($this->writers) > 1):
+                ?>
+                <span class="text-muted"><?php echo $this->translation['writers']; ?> </span>
+                <?php
+                foreach ($this->writers as $key => $writers):
+                    echo $writers['name'];
+                    if ($key < count($this->writers) - 1):
+                        echo ", ";
+                    else:
+                        echo ".";
+                    endif;
+                endforeach;
+            else:
+                ?>
+                <span class="text-muted"><?php echo $this->translation['writer']; ?> </span>
+                <?php
+                echo $this->writers[0]['name'];
+            endif;
+            ?> 
+            <br /> 
+            <?php
+        endif;
+        ?>
+
+        <?php if(isset($this->movie["homepage"]) and !empty($this->movie["homepage"])): 
+            ?>
+            <span class="text-muted"><?php echo $this->translation['website']; ?>:</span> <a href="<?php echo $this->movie["homepage"];?>" target="_blank" rel="nofollow"><?php echo $this->movie["homepage"];?></a><br />
+            <?php
+        endif; ?> 
+
+        <?php if(isset($this->movie['production_companies']) and !empty($this->movie['production_companies'])): ?>
+        <span class="text-muted"><?php 
+            if(count($this->movie['production_companies']) > 1):
+                echo $this->translation['production_companies'];
+            else:
+                echo $this->translation['production_company']; 
+            endif;
+            ?>
+            :</span>
+            <?php foreach ($this->movie['production_companies'] as $key => $company): 
+                    if($key > 0):
+                        echo ", ";
+                    endif;
+                    echo $company['name'];
+                  endforeach;
+            ?><br />
+        <?php endif; ?>
+
+        <?php if(isset($this->movie['production_countries']) and !empty($this->movie['production_countries'])): ?>
+        <span class="text-muted"><?php
+            if(count($this->movie['production_countries']) > 1):
+                echo $this->translation['production_countries']; 
+            else:
+                echo $this->translation['production_country']; 
+            endif;
+         ?>:</span> 
+            <?php foreach ($this->movie['production_countries'] as $key => $country): 
+                        if($key > 0):
+                            echo ", ";
+                        endif;
+                        echo $country['name'];
+                  endforeach;
+            ?><br />
+        <?php endif; ?>
+    </div>
+    <div class="clearfix"></div><br />
+    <div class="col-sm-12">
+        <div class="well well-sm movieSocialButtons">
+            <ul class="pull-left">
+              <li><a href="#" data-url="<?php echo $this->canonical; ?>" class="gplusShare"><span class="micon-google-plus"></span> +1</a></li>
+              <li class="text-muted"> / </li>
+              <li><a href="#" data-url="<?php echo $this->canonical; ?>" data-media="<?php echo $this->originalImage . $this->movie['poster_path']; ?>" data-description="<?php if(isset($this->movie['title'])): echo $this->movie['title']; endif;?>" class="pinitShare"> <span class="micon-pinterest"></span> Pinit</a></li>
+              <li class="text-muted"> / </li>
+              <li><a href="#" data-text="<?php if(isset($this->movie['title'])): echo $this->movie['title']; endif;?>" class="popout-menu-item twitterShare"> <span class="micon-twitter"></span> Tweet</a></li>
+              <li class="text-muted"> / </li>
+              <li><a href="#" data-url="<?php echo $this->canonical; ?>" class="popout-menu-item facebookShare"> <span class="micon-facebook"></span> Share</a></li>
+            </ul>
+            <ul class="pull-right">
+                <li class="userbuttons-pre-loader"><img src="Assets/img/loading2.gif" /></li>
+                <li class="FavoriteWrapper hide"><a href="javascript:void(0);" class="btn awesomeButton userbuttons Favorite" data-action="add" data-type="favorite"><span class="fronticon micon-heart"></span> <?php echo $this->translation['favorite']; ?> <span class="micon-plus"></span><span class="micon-munis"></span></a></li>
+                <li class="text-muted FavoriteDivider hide"> / </li>
+                <li class="WantToWatchWrapper hide"><a href="javascript:void(0);" class="btn awesomeButton userbuttons WantToWatch" data-action="add" data-type="wanttowatch"><span class="fronticon micon-target"></span> <?php echo $this->translation['want_to_watch']; ?> <span class="micon-plus"></span><span class="micon-munis"></span></a></li>
+                <li class="text-muted WantToWatchDivider hide"> / </li>
+                <li class="WatchedWrapper hide"><a href="javascript:void(0);" class="btn awesomeButton userbuttons Watched" data-action="add" data-type="watched"><span class="fronticon micon-checkmark"></span> <?php echo $this->translation['watched']; ?> <span class="micon-plus"></span><span class="micon-munis"></span></a></li>
+                <li class="text-muted WatchedDivider"> | </li>
+                <li><span class="micon-eye-open"></span> <span class="pageView" data-id="<?php echo $this->movie['id'];?>"><img src="Assets/img/loading2.gif" /></span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="col-sm-4 col-lg-2">
+        <p class="lead"><?php echo $this->translation['trailer']; ?></p>
+        <?php if(isset($this->youtubeVideo) and !empty($this->youtubeVideo)): ?>
+            <a href="<?php echo $this->youtubeVideo; ?>" class="zoombox trailer">
+                <img src="http://img.youtube.com/vi/<?php echo $this->youtubeVideoID; ?>/mqdefault.jpg" />
+                <span class="micon-play playTrailer"></span>
+            </a>
+        <?php endif; ?>
+    </div>
+    <div class="col-sm-8 col-lg-10 screenshots">
+        <?php
+        if (isset($this->movie['images']['backdrops']) and !empty($this->movie['images']['backdrops'])):
+            ?>
+            <p class="lead"><?php echo $this->translation['images']; ?></p>
+            <?php
+            foreach ($this->movie['images']['backdrops'] as $key => $backdrop):
+                ?>
+                <a href="<?php echo $this->originalImage . $backdrop['file_path']; ?>" data-download="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/download/id/" . base64_encode($this->originalImage . $backdrop['file_path']); ?>" <?php if(isset($this->movie['title'])): echo 'title="'.$this->movie['title'].'"'; endif;?> class="zoombox zgallery2 <?php
+                    switch($key): 
+                        case 0:
+                            echo "visible-lg visible-md visible-sm visible-xs";
+                        break;
+                        case 1:
+                            echo "visible-lg visible-md visible-sm visible-xs";
+                        break;
+                        case 2:
+                            echo "visible-lg visible-md ";
+                        break;
+                        case 3:
+                            echo "visible-lg";
+                        break;
+                        case 4:
+                            echo "visible-lg";
+                        break;
+                        default:
+                        echo "hide"; 
+                    endswitch;?> pull-left">
+                    <img src="<?php echo $this->mediumThumb . $backdrop['file_path']; ?>" />
+                </a>
+                <?php
+            endforeach;
+        endif;
+        ?>
+    </div>
+
+    <div class="clearfix"></div><Br />
+   
+    <div class="col-md-6">
+        <ul class="nav nav-tabs" id="movieTab">
+          <li class="active"><a href="#cast"><?php echo $this->translation['cast']; ?></a></li>
+          <li><a href="#crew"><?php echo $this->translation['crew']; ?></a></li>
+          <li><a href="#similarMovies"><?php echo $this->translation['similarMovies']; ?></a></li>
+        </ul>
+
+        <div class="tab-content">
+          <div class="tab-pane active" id="cast">
+            <?php if (isset($this->movie['casts']['cast']) and is_array($this->movie['casts']['cast'])):
+                usort($this->movie['casts']['cast'], function($a, $b) {
+                    return $a['order'] - $b['order'];
+                });
+                ?>
+                <table class="table table-striped">
+                    <tbody>
+                        <?php foreach ($this->movie['casts']['cast'] as $key => $cast): ?>
+                            <tr>
+                                <td width="50px"><?php
+                                    echo '<a href="'.ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage").'/people/'.$cast['id'].'/'.urlencode($cast['name']).'">';
+                                    if (isset($cast['profile_path']) and !empty($cast['profile_path'])):
+                                        echo '<img src="'.$this->profileThumbPath . $cast['profile_path'].'" />';
+                                    else:
+                                        echo '<img src="Assets/img/noposter.jpg" width="45" height="72" />';
+                                    endif;
+                                    echo '</a>';
+                                    ?></td>
+                                <td><?php echo '<a href="'.ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage").'/people/'.$cast['id'].'/'.urlencode($cast['name']).'">'.$cast['name'].'</a>'; ?>
+                                    <div class="text-muted"><?php if(isset($cast['character']) and !empty($cast['character'])): echo $this->translation["as"] . " " . $cast['character']; endif; ?></div></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php 
+                endif; 
+            ?>
+          </div>
+          <div class="tab-pane" id="crew">
+            <?php if (isset($this->movie['casts']['crew']) and is_array($this->movie['casts']['crew'])): ?>
+                <div class="span6">
+                    
+                    <table class="table">
+                        <tbody>
+                            <?php 
+                            $crewCounter = 1;
+                            foreach ($this->movie['casts']['crew'] as $key => $crew): 
+                                if(isset($this->movie['casts']['crew'][$key-1]['department']) and $crew['department'] !== $this->movie['casts']['crew'][$key-1]['department'] OR $key == 0 ):
+                                    ?>
+                                    <?php $crewCounter++; ?>
+                                    <tr >
+                                        <td class="text-muted"><?php if($key>0): echo "<br />"; endif;?><strong><?php echo $crew['department']; ?></strong></td>
+                                        <td></td>
+                                    </tr>
+                                    <?php
+                                endif;
+                                ?>
+                                <tr>
+                                    <td><?php echo '<a href="'.ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage").'/people/'.$crew['id'].'/'.urlencode($crew['name']).'">'.$crew['name'].'</a>'; ?></td>
+                                    <td class="text-warning"><?php echo $crew['job']; ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+          </div>
+          <div class="tab-pane" id="similarMovies">
+            <?php if (isset($this->movie["similar_movies"]["results"]) and is_array($this->movie["similar_movies"]["results"])):
+                ?>
+                <?php
+                foreach ($this->movie["similar_movies"]["results"] as $key => $similar):
+                        if(isset($similar)):
+                        ?>
+                        <div class="col-xs-4 col-sm-3">
+                            <a href="<?php echo ngfw\Uri::baseUrl() .ngfw\Registry::get("requestedLanguage"). "/movie/" . $similar['id'] . "/" . urlencode($similar['title']."-".substr($similar['release_date'], 0, 4)); ?>"><img class="thumbnail" 
+                                <?php
+                                if (!isset($similar['poster_path']) or empty($similar['poster_path'])):
+                                    echo 'src="Assets/img/noposter.jpg"';
+                                else:
+                                    echo 'src="' . $this->smallThumb . $similar['poster_path'] . '"';
+                                endif;
+                                ?> data-title="<?php echo $similar['title']; ?>" rel="tooltip" /></a>
+                            <br />
+                        </div>
+                        <?php
+                        endif;
+                endforeach;
+            endif;
+            ?>
+          </div>
+        </div>
+    </div>
+     <div class="col-md-6" id="comments">
+        <div class="fb-comments" data-href="<?php echo $this->canonical;?>" data-colorscheme="light" data-numposts="8" data-width="550"></div>
+    </div>
+</div>
+
+
+<?php
+endif;
+?>

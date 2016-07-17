@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <base href="<?php echo ngfw\Uri::baseUrl(); ?>" />
+    <title><?php echo isset($this->title) ? $this->title : "Admin"; ?> </title>
+    <meta name="description" content="">
+    <meta name="author" content="Nick Gejadze">
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="Assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="Assets/css/bootstrap-theme.min.css">
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="Assets/js/bootstrap.min.js"></script>
+    <script src="Assets/js/admin.js"></script>
+    <script>
+    $(function(){
+
+    $('.confirm-delete').on('click',function() {
+          var href = $(this).attr('href');
+          $('#modal-from-dom-confirm').find('.tmpRemove').attr('href', href);
+          $('#modal-from-dom-confirm').modal('show');
+          return false;
+      });
+      
+  });
+    </script>  
+  </head>
+  <body>
+    <?php
+    if (isset($this->user)):
+    ?>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/homepage/"><?php echo $this->translation['home'];?></a></li>
+            <li><a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/page/"><?php echo $this->translation['pages'];?></a></li>
+            <li><a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/ads/"><?php echo $this->translation['ads'];?></a></li>
+            <li><a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/"><?php echo $this->translation['users'];?></a></li>
+            <li><a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/admins/"><?php echo $this->translation['administrators'];?></a></li>
+            <li><a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/translation/"><?php echo $this->translation['translation'];?></a></li>
+            <li><a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/settings/"><?php echo $this->translation['settings'];?></a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"> <?php echo $this->user['Username']; ?> <b class="caret"></b></a>
+                <ul class="dropdown-menu">                                        
+                <li><a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/logout"><?php echo $this->translation['log_out']; ?></a></li>                                
+                </ul>
+            </li>
+          </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+    <?php
+    endif;
+    ?>
+    <div class="container wrapper" style="margin-top:55px;">
+    <?php
+    if(isset($this->alertInstallationFile) and $this->alertInstallationFile == true): 
+        echo '<div class="alert alert-danger"> <strong>Attention!</strong> You need to delete "install.php" for security reasons!</div>';
+    endif;
+    $this->render();
+    ?>
+    </div>
+    <div class="modal fade" id="modal-from-dom-confirm">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title"><?php echo $this->translation['delete?']; ?></h4>
+            </div>
+            <div class="modal-body">
+              <p><?php echo $this->translation['are_you_sure_you_want_to_delete?']; ?></p>  
+            </div>
+            <div class="modal-footer">
+              <a href="#" class="btn btn-danger tmpRemove"><?php echo $this->translation['delete']; ?></a>
+              <a href="javascript:void(0);" onclick="$('#modal-from-dom-confirm').modal('hide');" class="btn btn-info"><?php echo $this->translation['cancel']; ?></a>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+    <footer>
+        <div class="container text-center">
+            <p >&copy; <?php echo $this->translation['sitename']; ?> <?php echo date("Y") ?></p>
+        </div>
+    </footer>
+
+
+   
+  </body>
+</html>

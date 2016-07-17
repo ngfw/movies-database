@@ -1,0 +1,88 @@
+<?php
+if (isset($this->role) and $this->role == "edit"):
+    ?>
+    <div class = "row">
+        <div class = "col-md-12">
+          <div class="jumbotron">
+            <h3><?php echo $this->translation['edit_the_administrator'];?></h3>
+    <form method="post">
+        <input type="hidden" name="userid" value="<?php echo $this->adminuser['AdminID'];?>"/>
+        <input type="text" class="form-control" name="Username" placeholder ="<?php echo $this->translation['username'];?>" value="<?php echo $this->adminuser['Username'];?>" />
+        <input type="password" class="form-control" name="Password" placeholder ="<?php echo $this->translation['password'];?>" value="" />
+        <input type="text" class="form-control" name="Email" placeholder ="<?php echo $this->translation['email'];?>" value="<?php echo $this->adminuser['Email'];?>"/>
+        <input type="submit" value="<?php echo $this->translation['edit'];?>" class="btn btn-primary"/>                
+    </form>
+    </div>
+        </div>
+        </div>
+<?php
+else:
+?>
+<div class="row">
+  <div class="col-md-9">
+    <h3><?php echo $this->translation['administrators'];?></h3>
+  </div>
+  <div class="col-md-3" align="right">
+    <a href="javascript:void(0);" class="btn btn-primary addAdmin"><?php echo $this->translation['add_administrator'];?></a>
+    <script>
+                $(function(){
+                    $(".addAdmin").click(function(){
+                        $("#addNewAdmin").removeClass("hide").show();
+                        $(this).attr('disabled', 'disabled');
+                    });
+                    $(".closeNewAdmin").click(function() {
+                        $(".addAdmin").removeAttr('disabled');
+                        $("#addNewAdmin").slideUp();
+                    });
+                });
+            </script>            
+  </div>
+  <div class="col-md-12 hide" id="addNewAdmin">
+    <div class="jumbotron" style="position:relative">
+      <h4><?php echo $this->translation['add_administrator'];?></h4>
+      <form method="post">
+        <input type="text" class="form-control" name="Username" placeholder ="<?php echo $this->translation['username'];?>" />
+        <input type="password" class="form-control" name="Password" placeholder ="<?php echo $this->translation['password'];?>" />
+        <input type="text" class="form-control" name="Email" placeholder ="<?php echo $this->translation['email'];?>" />
+        <input type="submit" value="<?php echo $this->translation['add'];?>" class="btn btn-primary"/>                
+      </form>
+      <span style="position:absolute; right:10px; top:10px; ">
+        <a href="javascript:void(0);" class="close closeNewAdmin" style="color:black">×</a>
+      </span>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <div class="col-md-12">
+    <table class="table table-striped">
+            <thead>
+                <tr>
+                  <th>#</th>
+                  <th><?php echo $this->translation['username'];?></th>
+                  <th><?php echo $this->translation['email'];?></th>
+                  <th><?php echo $this->translation['action'];?></th>
+                </tr>
+            </thead>
+            <tbody>
+              <?php 
+
+              foreach($this->admins as $key => $admin): ?>
+                <tr>
+                  <td><?php echo $key+1; ?></td>
+                  <td><?php echo $admin['Username']; ?></td>
+                  <td><?php echo $admin['Email']; ?></td>
+                  <td>
+                    <?php if ($key > 0): ?>
+                      <a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/admins/delete/<?php echo $admin['AdminID']; ?>" class="confirm-delete"><i class="glyphicon glyphicon-trash"></i></a>
+                    <?php endif; ?>
+                      &nbsp;&nbsp;
+                      <a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/admins/edit/<?php echo $admin['AdminID']; ?>"><i class="glyphicon glyphicon-pencil"></i></a>
+                  </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php
+endif;
+?>

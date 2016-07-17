@@ -1,0 +1,78 @@
+<?php
+if(isset($this->user) and !empty($this->user)):
+?>
+
+<?php
+if(isset($this->cover) and !empty($this->cover)):
+	?>
+	<div class="movieheader" data-image="<?php echo $this->cover; ?>" >
+        <img src="Assets/img/loading.gif" class="backstretchLoader" style="width:25px;"/>
+    </div>
+    <?php
+endif;
+?>
+<div class="row marginTop10">
+	<div class="col-sm-2 userProfileInfo">
+		<img src="<?php echo $this->avatar; ?>" class="thumbnail" />
+		<br />
+		<p class="lead"><?php echo $this->user['Name']; ?></p>
+		<?php
+		if($this->user['Private'] == "0"):
+			?>
+			<ul class="profileSocialButtons">
+                <li class="col-xs-6">
+                    <a href="#" data-url="<?php echo $this->canonical; ?>" data-media="<?php echo $originalImageUrl; ?>" data-description="<?php echo $this->user['Name']; ?>" class="pinitShare"> <span class="micon-pinterest"></span> Pinit</a>
+                </li>
+                <li class="col-xs-6">
+                    <a href="#" data-text="<?php echo $this->user['Name'] . " @ " . $this->canonical; ?>" class="popout-menu-item twitterShare"> <span class="micon-twitter"></span> Tweet</a></li>
+                <li class="col-xs-6"><a href="#" data-url="<?php echo $this->canonical; ?>" class="popout-menu-item facebookShare"> <span class="micon-facebook"></span> Share</a></li>
+                <li class="col-xs-6">
+                    <a href="#" data-url="<?php echo $this->canonical; ?>" class="gplusShare"><span class="micon-google-plus"></span> +1</a>
+                </li>
+            </ul>
+			<?php
+		endif;
+		?>
+	</div>
+	<div class="col-sm-10">
+		<?php
+		if($this->page == "settings"):
+		?>
+		<h4><?php echo $this->translation['settings']; ?></h4>
+		<div class="profileSettingsLoader" data-user="<?php echo $this->user['UserID'];?>"><img src="Assets/img/loading2.gif"/></div>
+		<div class="profileDenied alert alert-danger hide"><?php echo $this->translation['profile_page_is_private']; ?></div>
+		<div class="settingsResult hide">
+			<hr />
+			<div class="checkbox">
+				<label>
+                	<input type="checkbox" class="privacy"> <?php echo $this->translation['private_profile']; ?>
+              	</label>
+              	<p class="text-muted"><?php echo $this->translation['no_one_will_see_your_collections']; ?>.</p>
+            </div>
+		</div>
+		<?php
+		else:
+		?>
+		<div class="checkUserPermission" data-user="<?php echo $this->user['UserID'];?>"><img src="Assets/img/loading2.gif"/></div>
+		<div class="profileDenied alert alert-danger hide"><?php echo $this->translation['profile_page_is_private']; ?></div>
+	
+		<ul class="nav nav-tabs profileTabNav hide" id="ProfileTab">
+		  <li class="active favoriteTabHeader"><a href="#favorite"><?php echo $this->translation['favorites']; ?></a></li>
+		  <li class="wanttowatchTabHeader"><a href="#wanttowatch"><?php echo $this->translation['want_to_watch']; ?></a></li>
+		  <li class="watchedTabHeader"><a href="#watched"><?php echo $this->translation['watched']; ?></a></li>
+		</ul>
+
+		<div class="tab-content profileTabContent hide">
+		  <div class="tab-pane active" id="favorite"></div>
+		  <div class="tab-pane" id="wanttowatch"></div>
+		  <div class="tab-pane" id="watched"></div>
+		</div>
+		<?php endif; ?>
+	</div>
+</div>
+
+
+
+<?php
+endif;
+?>

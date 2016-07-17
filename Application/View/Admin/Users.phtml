@@ -1,0 +1,135 @@
+<div class="row">
+	<div class="col-md-4">
+            <h3 class="page-title"><?php echo $this->translation['users']; ?></h3>
+        </div>
+
+        <div class="col-md-12 sortButtons">
+                <div class="btn-group btn-group-justified">
+                <?php
+                $sort = ngfw\Session::get("usersSort");
+                $sortMethods = explode("-", $sort);
+                $sortField = (isset($sortMethods[0]) and !empty($sortMethods[0])) ? $sortMethods[0] : false;
+                $sortClause = (isset($sortMethods[1]) and !empty($sortMethods[1])) ? $sortMethods[1] : false;
+
+                if (isset($sortField) and $sortField == "UserID"):
+                    if ($sortClause == "desc"):
+                        ?>
+                        <a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/sort/UserID-asc" class="btn-small btn btn-primary sortByID"> <?php echo $this->translation['sort_by_id']; ?> <span class="glyphicon glyphicon-arrow-down"></span></a>
+                        <?php
+                    else:
+                        ?>
+                        <a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/sort/UserID-desc" class="btn-small btn btn-primary sortByID"> <?php echo $this->translation['sort_by_id']; ?> <span class="glyphicon glyphicon-arrow-up"></span></a>
+                    <?php
+                    endif;
+                else:
+                    if (!isset($sortField) or empty($sortField)):
+                        ?>
+                        <a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/sort/UserID-desc" class="btn-small btn btn-primary sortByID"> <?php echo $this->translation['sort_by_id']; ?> <span class="glyphicon glyphicon-arrow-down"></span></a>
+                        <?php
+                    else:
+                        ?>
+                        <a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/sort/UserID-desc" class="btn-small btn btn-default sortByID"> <?php echo $this->translation['sort_by_id']; ?> </a>
+                    <?php
+                    endif;
+                endif;
+
+                if (isset($sortField) and $sortField == "Name"):
+                    if ($sortClause == "desc"):
+                        ?>
+                        <a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/sort/Name-asc" class="btn-small btn btn-primary sortByID"> <?php echo $this->translation['sort_by_name']; ?> <span class="glyphicon glyphicon-arrow-down"></span></a>
+                        <?php
+                    else:
+                        ?>
+                        <a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/sort/Name-desc" class="btn-small btn btn-primary sortByID"> <?php echo $this->translation['sort_by_name']; ?> <span class="glyphicon glyphicon-arrow-up"></span></a>
+                    <?php
+                    endif;
+                else:
+                    ?>
+                    <a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/sort/Name-desc" class="btn-small btn btn-default sortByID"> <?php echo $this->translation['sort_by_name']; ?> </a>
+                <?php
+                endif;
+
+                if (isset($sortField) and $sortField == "FacebookUsername"):
+                    if ($sortClause == "desc"):
+                        ?>
+                        <a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/sort/FacebookUsername-asc" class="btn-small btn btn-primary sortByID"> <?php echo $this->translation['sort_by_facebook_username']; ?> <span class="glyphicon glyphicon-arrow-down"></span></a>
+                        <?php
+                    else:
+                        ?>
+                        <a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/sort/FacebookUsername-desc" class="btn-small btn btn-primary sortByID"> <?php echo $this->translation['sort_by_facebook_username']; ?> <span class="glyphicon glyphicon-arrow-up"></span></a>
+                    <?php
+                    endif;
+                else:
+                    ?>
+                    <a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/sort/FacebookUsername-desc" class="btn-small btn btn-default sortByID"> <?php echo $this->translation['sort_by_facebook_username']; ?> </a>
+                <?php
+                endif;
+            ?> 
+                </div>
+            </div>
+            <br />
+            <table class="table table-striped">
+            	<thead>
+        		<tr>
+				<th><?php echo $this->translation['user_id']; ?></th>
+				<th><?php echo $this->translation['facebook_id']; ?></th>
+				<th><?php echo $this->translation['name']; ?></th>
+				<th><?php echo $this->translation['first_name']; ?></th>
+				<th><?php echo $this->translation['last_name']; ?></th>
+				<th><?php echo $this->translation['facebook_link']; ?></th>
+				<th><?php echo $this->translation['facebook_username']; ?></th>
+				<th><?php echo $this->translation['gender']; ?></th>
+				<th><?php echo $this->translation['email']; ?></th>
+				<th><?php echo $this->translation['timezone']; ?></th>
+				<th><?php echo $this->translation['action'];?></th>
+				</tr>
+				</thead>
+				<tbody>
+			    <?php
+			    foreach ($this->users as $user):
+
+			    ?>
+                    <tr>
+                        <td><?php echo $user["UserID"]; ?></td>
+						<td><?php echo $user["FacebookID"]; ?></td>
+						<td><?php echo $user["Name"]; ?></td>
+						<td><?php echo $user["FirstName"]; ?></td>
+						<td><?php echo $user["LastName"]; ?></td>
+						<td><?php echo $user["FacebookLink"]; ?></td>
+						<td><?php echo $user["FacebookUsername"]; ?></td>
+						<td><?php echo $user["Gender"]; ?></td>
+						<td><?php echo $user["Email"]; ?></td>
+						<td><?php echo $user["Timezone"]; ?></td>
+						<td><a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/delete/<?php echo $user['UserID']; ?>" class="btn btn-danger confirm-delete"><i class="glyphicon glyphicon-trash"></i></a></td>
+                    </tr>
+			    <?php
+			    endforeach;
+			    ?>
+			</tbody>
+            </table>
+
+            <?php if (isset($this->pagination) and !empty($this->pagination)): ?>
+                <div class="col-md-12 text-center">
+                    <ul class="pagination">
+                        <?php
+                        $names = array("First" => $this->translation['first'], "Previous" => $this->translation['previous'], "Next" => $this->translation['next'], "Last" => $this->translation['last']);
+                        foreach ($this->pagination as $pagination):
+                            if (!is_numeric($pagination['name'])):
+                                if (array_key_exists($pagination['name'], $names)):
+                                    $pagination['name'] = $names[$pagination['name']];
+                                endif;
+                            endif;
+
+                            ?>
+                            <li class="<?php
+                                if ($pagination['status'] == false): 
+                                    echo "disabled";
+                                endif;
+                            ?>"><a href="<?php echo ngfw\Uri::baseUrl(). $this->requestedLanguage;?>/admin/action/users/page/<?php echo $pagination['pagenumber']; ?>"><?php echo $pagination['name'] ?></a></li>
+            <?php
+        endforeach;
+        ?>
+                    </ul>
+                </div>  
+    <?php endif; ?>
+</div>

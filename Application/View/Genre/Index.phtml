@@ -1,0 +1,167 @@
+<div class="row">
+    <div class="col-sm-3 col-md-3 fixCategories hidden-xs">
+        <?php if (isset($this->genres) and is_array($this->genres)): ?>
+            <ul class="list-group">
+                <?php foreach ($this->genres['genres'] as $genre): ?>
+                    <li class="list-group-item"><a href="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage"); ?>/genre/<?php echo $genre['id']; ?>/<?php echo urlencode($genre['name']); ?>"><?php echo $genre['name']; ?></a></li>
+                <?php endforeach; ?>   
+            </ul>
+        <?php endif; ?>
+    </div>
+    <div class="col-sm-9 col-md-9">
+        <?php
+        $years = range('1940', date("Y") + 1);
+        $decades = array();
+        foreach ($years as $year):
+            $decade = floor($year / 10) * 10;
+            $decades[$decade][] = $year;
+        endforeach;
+        $decades = array_reverse($decades, true);
+        ?>
+        <nav class="navbar navbar-default visible-xs" role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="visible-xs"><a href="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage"); ?>" class="g-icon micon-home menuLink"><?php echo $this->translation['home']; ?></a></li>
+                    <li class="visible-xs"><a href="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage"); ?>/popular" class="g-icon micon-fire menuLink"><?php echo $this->translation['popularMovies']; ?></a></li>
+                    <li class="visible-xs"><a href="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage"); ?>/popularpeople" class="g-icon micon-users menuLink"><?php echo $this->translation['popularPeople']; ?></a></li>
+                    <?php
+                        if(isset($this->objects['pages']) and !empty($this->objects['pages'])):
+                            foreach($this->objects['pages'] as $key => $page):
+                                switch($page['Title']):
+                                    case "About us":
+                                        ?><li class="visible-xs"><a href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage")."/page/".$page['Slug']; ?>" class="g-icon micon-info menuLink"><?php echo isset($this->translation[$page['Slug']]) ? $this->translation[$page['Slug']]: $page['Title'];?></a></li><?php
+                                    break;
+                                    case "Privacy Policy":
+                                        ?><li class="visible-xs"><a href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage")."/page/".$page['Slug']; ?>" class="g-icon micon-lock menuLink"><?php echo isset($this->translation[$page['Slug']]) ? $this->translation[$page['Slug']]: $page['Title'];?></a></li><?php
+                                    break;
+                                    case "Terms and Conditions":
+                                        ?><li class="visible-xs"><a href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage")."/page/".$page['Slug']; ?>" class="g-icon micon-file menuLink"><?php echo isset($this->translation[$page['Slug']]) ? $this->translation[$page['Slug']]: $page['Title'];?></a></li><?php
+                                    break;
+                                    case "Contact us":
+                                        ?><li class="visible-xs"><a href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage")."/page/".$page['Slug']; ?>" class="g-icon micon-envelope menuLink"><?php echo isset($this->translation[$page['Slug']]) ? $this->translation[$page['Slug']]: $page['Title'];?></a></li><?php
+                                    break;
+                                endswitch;
+                            endforeach;
+                        endif;
+                        ?>
+                    <li class="dropdown visible-xs">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $this->translation['genres'];?><b class="caret"></b></a>
+                        <?php if (isset($this->genres) and is_array($this->genres)): ?>
+                            <ul class="dropdown-menu">
+                                <?php foreach ($this->genres['genres'] as $genre): ?>
+                                    <li><a href="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage"); ?>/genre/<?php echo $genre['id']; ?>/<?php echo urlencode($genre['name']); ?>"><?php echo $genre['name']; ?></a></li>
+                                <?php endforeach; ?>   
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+                    <?php foreach ($decades as $decade => $years): ?>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $decade; ?> <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <?php foreach ($years as $year): ?>    
+                                    <li><a href="<?php echo ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/sort/year/" . $year; ?>"><?php echo $year; ?></a></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </nav>
+        <h4><?php echo sprintf($this->translation['genrePageHeader'], $this->selectedGenreName); ?></h4>
+        <div class="clearfix"></div>
+        <?php
+        foreach ($this->movies["results"] as $key => $movie):
+            if (!isset($movies['release_date']) or empty($movies['release_date'])):
+                $movies['release_date'] = "0000";
+            endif;
+            $movieURL = ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/movie/" . $movie['id'] . "/" . urlencode($movie['title'] . "-" . substr($movie['release_date'], 0, 4));
+            if (!isset($movie['poster_path']) or empty($movie['poster_path'])):
+                $coverURL = $originalImageUrl = "Assets/img/noposter.jpg";
+            else:
+                $coverURL = $this->mediumThumb . $movie['poster_path'];
+                $originalImageUrl = $this->originalImage . $movie['poster_path'];
+            endif;
+            ?>
+            <div class="col-xs-6 col-md-4 col-lg-3 movieListing">
+                <div class="container-item">
+                    <div class="item">
+                        <a href="<?php echo $movieURL; ?>"><img src="<?php echo $coverURL; ?>" class="listCover" alt="<?php echo $movie['title']; ?>" /></a>
+                        <div class="item-overlay">
+                            <a href="javascript:void(0);" data-key="<?php echo $key; ?>" class="hidden-xs item-button share share-btn micon-list"></a>
+                        </div>
+                        <div class="item-content">
+                            <div class="item-top-content-inner">
+                                <div class="item-top-title">
+                                    <a href="<?php echo $movieURL; ?>"><?php echo $movie['title']; ?></a>
+                                </div>
+                            </div>  
+                        </div>
+                    </div>
+                    <div class="hidden-xs item-menu popout-menu popout<?php echo $key; ?>" data-key="<?php echo $key; ?>">
+                        <ul>
+                            <li>
+                                <a href="#" data-url="<?php echo $movieURL; ?>" class="gplusShare"><span class="micon-google-plus"></span> +1</a>
+                            </li>
+                            <li>
+                                <a href="#" data-url="<?php echo $movieURL; ?>" data-media="<?php echo $originalImageUrl; ?>" data-description="<?php echo $movie['title']; ?>" class="pinitShare"> <span class="micon-pinterest"></span> Pinit</a>
+                            </li>
+                            <li>
+                                <a href="#" data-text="<?php echo $movie['title'] . " " . $movieURL; ?>" class="popout-menu-item twitterShare"> <span class="micon-twitter"></span> Tweet</a></li>
+                            <li><a href="#" data-url="<?php echo $movieURL; ?>" class="popout-menu-item facebookShare"> <span class="micon-facebook"></span> Share</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <?php
+        endforeach;
+        ?>       
+        <div class="clearfix"></div>
+        <?php
+        if ($this->movies['total_pages'] > 1):
+            ?>
+
+            <ul class="pagination">
+                <?php
+                if ($this->page < 2):
+                    echo '<li class="disabled"><a href="javascript:void(0);">&laquo;</a></li>';
+                else:
+                    echo '<li><a href="' . ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . '/genre/' . $this->selectedGenreID . '/' . $this->selectedGenreName . '/page/' . ($this->page - 1) . '">&laquo;</a></li>';
+                endif;
+                for ($i = 1; $i <= $this->movies['total_pages']; $i++):
+                    $active = null;
+                    if ($this->page == $i):
+                        $active = 'class="active"';
+                    endif;
+                    if ($i == 1 OR ($i > ($this->page - 4) and $i < ($this->page + 4)) OR $i == $this->movies['total_pages']):
+                        if ($i == $this->movies['total_pages'] and ($this->page < ($this->movies['total_pages'] - 4))):
+                            echo '<li class="disabled"><a href="javascript:void(0);">.....</a></li>';
+                        endif;
+                        echo '<li ' . $active . '><a href="' . ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . '/genre/' . $this->selectedGenreID . '/' . $this->selectedGenreName . '/page/' . $i . '">' . $i . '</a></li>';
+                        if ($i == 1 and ($this->page > ($i + 4))):
+                            echo '<li class="disabled"><a href="javascript:void(0);">.....</a></li>';
+                        endif;
+                    endif;
+                endfor;
+                if ($this->page >= $this->movies['total_pages']):
+                    echo '<li class="disabled"><a href="javascript:void(0);">&laquo;</a></li>';
+                else:
+                    echo '<li><a href="' . ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . '/genre/' . $this->selectedGenreID . '/' . $this->selectedGenreName . '/page/' . ($this->page + 1) . '">&raquo;</a></li>';
+                endif;
+                ?>
+            </ul>
+
+
+            <?php
+        endif;
+        ?> 
+    </div>
+</div>
+

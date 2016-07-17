@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+    <html lang="en" class="no-js">
+    <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="HandheldFriendly" content="true" />
+    <base href="<?php echo ngfw\Uri::baseUrl(); ?>" />
+    <?php
+    $title = (isset($this->title) and !empty($this->title)) ? $this->title : $this->translation['sitename'];
+    $description = (isset($this->metaDescription) and !empty($this->metaDescription)) ? $this->metaDescription : $this->translation['defaultMetaDescription'];
+    $keywords = (isset($this->metaKeywords) and !empty($this->metaKeywords)) ? $this->metaKeywords : $this->translation['defaultMetaKeywords'];
+    ?>
+    <title><?php echo $title; ?></title>
+    <meta name="description" content="<?php echo $description; ?>">
+    <meta name="keywords" content="<?php echo $keywords; ?>">
+    <?php
+    if (isset($this->og) and is_array($this->og)):
+        foreach ($this->og as $type => $og):
+            echo '<meta property="og:' . $type . '" content="' . $og . '"/>';
+        endforeach;
+    endif;
+    if (isset($this->canonical) and !empty($this->canonical)):
+        echo '<link rel="canonical" href="'.$this->canonical.'" />';
+        echo '<link rel="alternate" hreflang="'.ngfw\Registry::get("requestedLanuage").'" href="'.$this->canonical.'" />';
+    endif;
+    ?>
+    <link rel="shortcut icon" href="favicon.ico">
+    <?php 
+    // DEVELOPMENT VERSION //
+    /*
+    <link rel="stylesheet" href="Assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="Assets/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="Assets/css/zoombox.css">
+    <link rel="stylesheet" href="Assets/css/style.css">
+    */
+    ?>
+    <link rel="stylesheet" href="Assets/css/app.min.css">
+    <script>var baseURL = "<?php echo ngfw\Uri::baseUrl(); ?>"; var requestedLanguage = "<?php echo ngfw\Registry::get("requestedLanguage");?>"; 
+    <?php if(isset($this->objects["settings"]["fb:app_id"]) and is_numeric($this->objects["settings"]["fb:app_id"])): ?>
+    var FB_APP_ID = '<?php echo $this->objects["settings"]["fb:app_id"];?>';
+    <?php endif; ?>
+    var Number_Of_Profile_Movies = <?php echo $this->objects["settings"]["Number_Of_Profile_Movies"]; ?>;
+    var channelUrl ='<?php echo ngfw\Uri::baseUrl(); ?>channel.php';
+    var loadmoretext = "<?php echo $this->translation['load_more']; ?>";
+    var noResults = "<?php echo $this->translation['noResults']; ?>";
+    <?php if(isset($this->movie['id']) and is_numeric($this->movie['id'])):?>
+    var mid = '<?php echo $this->movie['id'];?>';
+    <?php endif; ?>
+    </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+    <!--[if lte IE 7]>
+    <script src="Assets/js/lte-ie7.js">
+    </script><![endif]-->
+    </head>
+    <body>
+        <div class="menucontainer">
+            <ul id="menu" class="menu-main">
+                <li class="menuIconWrapper hidden-xs"><a class="g-icon micon-list micon-menu menuIcon"></a>
+                    <nav class="menu-wrapper">
+                    <div class="scroller">
+                    <ul class="menu">
+                        <li><a href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage"); ?>" class="g-icon micon-home menuLink"><?php echo $this->translation['home']; ?></a></li>
+                        <li><a href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage"); ?>/popular" class="g-icon micon-fire menuLink"><?php echo $this->translation['popularMovies']; ?></a></li>
+                        <li><a href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage"); ?>/popularpeople" class="g-icon micon-users menuLink"><?php echo $this->translation['popularPeople']; ?></a></li>
+                        <?php
+                        if(isset($this->objects['pages']) and !empty($this->objects['pages'])):
+                            foreach($this->objects['pages'] as $key => $page):
+                                switch($page['Title']):
+                                    case "About us":
+                                        ?><li><a href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage")."/page/".$page['Slug']; ?>" class="g-icon micon-info menuLink"><?php echo isset($this->translation[$page['Slug']]) ? $this->translation[$page['Slug']]: $page['Title'];?></a></li><?php
+                                    break;
+                                    case "Privacy Policy":
+                                        ?><li><a href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage")."/page/".$page['Slug']; ?>" class="g-icon micon-lock menuLink"><?php echo isset($this->translation[$page['Slug']]) ? $this->translation[$page['Slug']]: $page['Title'];?></a></li><?php
+                                    break;
+                                    case "Terms and Conditions":
+                                        ?><li><a href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage")."/page/".$page['Slug']; ?>" class="g-icon micon-file menuLink"><?php echo isset($this->translation[$page['Slug']]) ? $this->translation[$page['Slug']]: $page['Title'];?></a></li><?php
+                                    break;
+                                    case "Contact us":
+                                        ?><li><a href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage")."/page/".$page['Slug']; ?>" class="g-icon micon-envelope menuLink"><?php echo isset($this->translation[$page['Slug']]) ? $this->translation[$page['Slug']]: $page['Title'];?></a></li><?php
+                                    break;
+                                endswitch;
+                            endforeach;
+                        endif;
+                        ?>
+                    </ul>
+                    </div>
+                </nav>
+                </li>
+                <li class="logo"><a rel="tooltip" data-placement="right" data-original-title="<?php echo $this->translation['sitename']; ?>" href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage"); ?>"><img src="Assets/img/logo.png" alt="<?php echo $this->translation['sitename']; ?>" /></a></li>
+                <li class="headerSearch col-sm-3">
+                    <form class="navbar-form" role="search" id="search">
+                        <div class="input-group">
+                            <input type="text" class="form-control search-field" name="search" placeholder="<?php echo $this->translation['search'];?>" <?php if(isset($this->searchTerm) and !empty($this->searchTerm)): ?> value="<?php echo $this->searchTerm; ?>" <?php endif;?> autocomplete="off">
+                            <div class="input-group-btn">
+                                <button type="submit" class="btn btn-default micon-search"></button>
+
+                            </div>
+                            <button type="button" data-url="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage")."/surprise";?>" class="surprise btn btn-info micon micon-star"></button>
+                        </div>
+                    </form>
+                </li>
+                <li class="fbAuth">
+                    <?php if(isset($this->objects["settings"]["Allow_Facebook_Authentication"]) and $this->objects["settings"]["Allow_Facebook_Authentication"]): ?>
+                        <li class="dropdown fblogoutwrapper hide">
+                            <a class="dropdown-toggle facebookName" data-toggle="dropdown" href="javascript:void(0);">
+                            <img class="facebookAvatar" src="Assets/img/noposter.jpg" alt="FB Avatar" width="50" height="50"> </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="profileLink" href="#"><?php echo $this->translation['profile']; ?></a></li>
+                                <li><a class="profileSettings" href="#"><?php echo $this->translation['settings']; ?></a></li>
+                                <li><a class="fblogout" href="javascript:void(0);"><?php echo $this->translation['log_out']; ?></a></li>
+                            </ul>
+                        </li>
+                        <li class="fbloginWrapper hide">
+                            <a href="javascript:void(0);" class="fblogin">
+                            <span class="micon-facebook"></span> <span class="custom-xs-hide"><?php echo $this->translation['login_with_facebook']; ?></span></a>
+                        </li>
+                    <?php endif; ?>
+                </li>
+            </ul>
+        </div>
+        <div class="container">
+            <?php $this->render(); ?>
+            <div class="clear"></div>
+            <div class="row center" >
+                <div class="col-md-12 marginTop10">
+                <div class="hidden-xs">
+                <?php
+                    $localAd = array();
+                    foreach ($this->objects['ads'] as $ad):
+                        if ($ad['adSize'] == "728x90"):
+                            $localAd[] = $ad['adValue'];
+                        endif;
+                    endforeach;
+                    if (!empty($localAd)):
+                        shuffle($localAd);
+                        echo $localAd[0];
+                    endif;
+                ?>
+                </div>
+                <div class="hidden-sm hidden-md hidden-lg">
+                    <?php
+                    $localAd = array();
+                    foreach ($this->objects['ads'] as $ad):
+                        if ($ad['adSize'] == "336x280"):
+                            $localAd[] = $ad['adValue'];
+                        endif;
+                    endforeach;
+                    if (!empty($localAd)):
+                        shuffle($localAd);
+                        echo $localAd[0];
+                    endif;
+                ?>
+                </div>
+            
+                <div class="col-xs-12">
+                    <hr />
+                    <?php
+                    if(isset($this->objects['pages']) and !empty($this->objects['pages'])):
+                        ?> <ul class="list-inline"> <?php
+                        foreach($this->objects['pages'] as $key => $page):
+                            ?>
+                            <li><a href="<?php echo ngfw\Uri::baseUrl().ngfw\Registry::get("requestedLanguage")."/page/".$page['Slug']; ?>"><?php echo isset($this->translation[$page['Slug']]) ? $this->translation[$page['Slug']]: $page['Title'];?></a></li>
+                            <?php
+                            if(($key+1) != count($this->objects['pages'])):
+                                ?>
+                                <li class="text-muted">|</li>
+                                <?php
+                            endif;
+                        endforeach; 
+                        ?> </ul> <?php
+                    endif;
+                    ?>
+                    <p>
+                    <?php
+                    if (isset($this->availableLanguages) and is_array($this->availableLanguages) and count($this->availableLanguages) > 1):
+                        ?>
+                    <ul class="list-inline flags">
+                        <?php
+                        foreach ($this->availableLanguages as $key => $language):
+                            ?>
+                            <li><a href="<?php echo ngfw\Uri::baseUrl().$language; ?>" class="setLanguage showtooltip"
+                                   data-original-title="<?php echo $language; ?>" data-language="<?php echo $language; ?>">
+                                <img src="<?php echo ngfw\Uri::baseUrl(); ?>Assets/img/<?php echo $language; ?>.png" /></a></li>
+                        <?php
+                        endforeach;
+                        ?>
+                    </ul>
+                    <?php
+                    endif;
+                    ?>
+                    </p>
+                    <p><?php echo $this->translation['sitename']; ?> &copy; <?php echo date("Y"); ?></p>
+                    <p>
+                    Powered by: <img src="Assets/img/tmdb-logo.png" width="100px" data-original-title="This product uses the TMDb API but is not endorsed or certified by TMDb." rel="tooltip" data-placement="right" />
+                    </p>
+		
+                </div>
+            </div>
+        </div>
+        <div id="fb-root"></div>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-backstretch/2.0.4/jquery.backstretch.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/Cookies.js/0.3.1/cookies.min.js"></script>
+        <script src="//connect.facebook.net/en_US/all.js"></script>
+        
+        <?php
+        /*
+        <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+        */
+        ?>
+        <?php
+        // DEVELOPMENT
+        /*
+        <script src="Assets/js/bootstrap.min.js"></script>
+        <script src="Assets/js/zoombox.js"></script>
+        <script src="Assets/js/app.js"></script>
+        */
+        ?>
+        <script src="Assets/js/app.min.js"></script>
+    </body>
+</html>

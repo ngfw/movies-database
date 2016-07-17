@@ -1,0 +1,176 @@
+<?php 
+if (ngfw\App::isAjax()):
+
+	if(isset($_POST['get']) and $_POST['get'] == "favorite"):
+		if(isset($this->latestFavorites)):
+		foreach($this->latestFavorites as $favorite):?>
+		<div class="media">
+		  <a class="pull-left" href="#">
+		    <img class="media-object" src="//graph.facebook.com/<?php echo $favorite['FacebookID'];?>/picture">
+		  </a>
+		  <div class="media-body">
+		    <?php
+		    $nameLink = '<a href="'.ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") .'/user/'.$favorite['UserID'].'/'.urlencode($favorite['Name']).'" target="_blank">'.$favorite['Name'].'</a>';
+		    $movieLink = '<a href="'.ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/movie/" . $favorite['Movie']['id'] . "/" . urlencode($favorite['Movie']['title'] . "-" . substr($favorite['Movie']['release_date'], 0, 4)).'" target="_blank">'.$favorite['Movie']['title'].'</a>';
+		    echo sprintf($this->translation['added_to_favorites'], $nameLink, $movieLink);
+		    ?>
+		    <p class="text-muted"><?php echo Helper::humanTiming(strtotime($favorite['Added']));?>
+		    <?php echo $this->translation['ago']; ?><p>
+		  </div>
+		</div><hr />
+		<?php endforeach;
+		endif;
+	endif;
+
+	if(isset($_POST['get']) and $_POST['get'] == 'wanttowatch'):
+		if(isset($this->latestwanttowatch)):
+		foreach($this->latestwanttowatch as $wanttowatch):?>
+		<div class="media">
+		  <a class="pull-left" href="#">
+		    <img class="media-object" src="//graph.facebook.com/<?php echo $wanttowatch['FacebookID'];?>/picture">
+		  </a>
+		  <div class="media-body">
+		    <?php
+		    $nameLink = '<a href="'.ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") .'/user/'.$wanttowatch['UserID'].'/'.urlencode($wanttowatch['Name']).'" target="_blank">'.$wanttowatch['Name'].'</a>';
+		    $movieLink = '<a href="'.ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/movie/" . $wanttowatch['Movie']['id'] . "/" . urlencode($wanttowatch['Movie']['title'] . "-" . substr($wanttowatch['Movie']['release_date'], 0, 4)).'" target="_blank">'.$wanttowatch['Movie']['title'].'</a>';
+		    echo sprintf($this->translation['added_to_wanttowatch'], $nameLink, $movieLink);
+		    ?>
+		    <p class="text-muted"><?php echo Helper::humanTiming(strtotime($wanttowatch['Added']));?>
+		    <?php echo $this->translation['ago']; ?><p>
+		  </div>
+		</div><hr />
+		<?php endforeach;
+		endif;
+	endif;
+	if(isset($_POST['get']) and $_POST['get'] == 'watched'):
+		if(isset($this->latestwatched)):
+		foreach($this->latestwatched as $watched):?>
+		<div class="media">
+		  <a class="pull-left" href="#">
+		    <img class="media-object" src="//graph.facebook.com/<?php echo $watched['FacebookID'];?>/picture">
+		  </a>
+		  <div class="media-body">
+		    <?php
+		    $nameLink = '<a href="'.ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") .'/user/'.$watched['UserID'].'/'.urlencode($watched['Name']).'" target="_blank">'.$watched['Name'].'</a>';
+		    $movieLink = '<a href="'.ngfw\Uri::baseUrl() . ngfw\Registry::get("requestedLanguage") . "/movie/" . $watched['Movie']['id'] . "/" . urlencode($watched['Movie']['title'] . "-" . substr($watched['Movie']['release_date'], 0, 4)).'" target="_blank">'.$watched['Movie']['title'].'</a>';
+		    echo sprintf($this->translation['added_to_watched'], $nameLink, $movieLink);
+		    ?>
+		    <p class="text-muted"><?php echo Helper::humanTiming(strtotime($watched['Added']));?>
+		    <?php echo $this->translation['ago']; ?><p>
+		  </div>
+		</div><hr />
+		
+		<?php endforeach;
+		endif;
+	endif;
+
+exit();
+endif;
+?>
+<style>
+.dashboard .media{
+	height:75px;
+}
+</style>
+<div class="row dashboard">
+	<?php if($this->facebookEnabled): ?>
+	<div class="col-md-3">
+		<h4><?php echo $this->translation['favorite']; ?></h4><hr />
+		<div class="favoritesResult"><img src="Assets/img/loading2.gif" /></div>
+		<script>
+		$(function(){
+			$.ajaxQueue({
+				type: "POST",
+		        data: { get: "favorite" }
+		    }).done(function( response ) {
+		    	$(".favoritesResult").html(response);
+		    });
+		});
+		</script>
+	</div>
+	
+	<div class="col-md-3">
+		<h4><?php echo $this->translation['want_to_watch']; ?></h4><hr />
+		<div class="wantchToWatchResult"><img src="Assets/img/loading2.gif" /></div>
+		<script>
+		$(function(){
+			$.ajaxQueue({
+				type: "POST",
+		        data: { get: "wanttowatch" }
+		    }).done(function( response ) {
+		    	$(".wantchToWatchResult").html(response);
+		    });
+		});
+		</script>
+	</div>
+	
+	<div class="col-md-3">
+		<h4><?php echo $this->translation['watched']; ?></h4><hr />
+		<div class="watchedResult"><img src="Assets/img/loading2.gif" /></div>
+		<script>
+		$(function(){
+			$.ajaxQueue({
+				type: "POST",
+		        data: { get: "watched" }
+		    }).done(function( response ) {
+		    	$(".watchedResult").html(response);
+		    });
+		});
+		</script>
+	</div>
+	<?php else: ?>
+	<div class="col-md-9">
+		<div class="alert alert-danger"><?php echo $this->translation['please_enable_facebook']; ?></div>
+	</div>
+	<?php endif; ?>
+
+	<div class="col-md-3">
+		<h4><?php echo $this->translation['stats']; ?></h4><hr />
+		<ul class="nav nav-pills nav-stacked">
+
+			<li class="active"><strong><?php echo $this->translation['website_stats']; ?>:</strong></li>
+	        <li><?php echo $this->translation['users']; ?>
+	            <span class="badge pull-right"><?php echo $this->totalusers; ?></span>
+	          </a>
+	        </li>
+	        <li><?php echo $this->translation['movies_viewed_on_website']; ?>
+	            <span class="badge pull-right"><?php echo $this->totalMovieViews; ?></span>
+	          </a>
+	        </li>
+	        <li>&nbsp;</li>
+	        <li class="active"><strong><?php echo $this->translation['social_stats']; ?>:</strong></li>
+	        <li><?php echo $this->translation['total_favorites']; ?>
+	            <span class="badge pull-right"><?php echo $this->totalFavorites; ?></span>
+	          </a>
+	        </li>
+	        <li><?php echo $this->translation['total_want_to_watch']; ?>
+	            <span class="badge pull-right"><?php echo $this->totalWanttowatch; ?></span>
+	          </a>
+	        </li>
+	        <li><?php echo $this->translation['total_watched']; ?>
+	            <span class="badge pull-right"><?php echo $this->totalWatched; ?></span>
+	          </a>
+	        </li>
+	    </ul>
+	    <br /><hr />
+	    <a href="javascript:void(0);" class="btn btn-danger clearCache"><?php echo $this->translation['clear_cache']; ?></a>
+	    <img src="Assets/img/loading2.gif" class="cache_preloader hide"/>
+	    <script>
+	    $(function(){
+	    	$(".clearCache").on("click", function(){
+	    		$this = $(this);
+	    		$this.addClass("disabled");
+	    		$(".cache_preloader").removeClass("hide");
+	    		$.ajaxQueue({
+					type: "POST",
+			        data: { get: "clearcache" }
+			    }).done(function( response ) {
+			    	$(".cache_preloader").addClass("hide");
+			    	$this.removeClass("disabled");
+			    });
+	    	});
+	    });
+	    </script>
+	</div>
+	
+</div>
